@@ -69,7 +69,7 @@ Note that the ARP framework requires a JDBC Driver for the source to allow Dremi
 4. Download the JDBC driver for the source
 5. Use the JDBC driver to connect to a sample source via sql client (e.g. dbeaver, dbvizualizer)
 6. View the source documentation or view the data types used in the tables and views used to get a list of the data types you need to map to dremio data types
-7. Update the rest of the file to add/modify any functions, operator behavior, etc. specific to the source. You can use official Dremio connectors built on ARP, such as [Postgres](https://github.com/dremio/dremio/blob/master/community/plugins/jdbc/src/main/resources/arp/implementation/postgresql-arp.yaml) and [Oracle](https://github.com/dremio/dremio/blob/master/community/plugins/jdbc/src/main/resources/arp/implementation/oracle-arp.yaml) to view additional options available. 
+7. Update the rest of the file to add/modify any functions, operator behavior, etc. specific to the source. 
 8. Update README.md
 9. To build, run `mvn clean install`. get the jar in the target dir, and copy that to $DREMIO_HOME/jars (on all nodes if running in cluster mode)
 10. Copy the JDBC driver to $DREMIO_HOME/jars/3rdparty (on all nodes if running in cluster mode)
