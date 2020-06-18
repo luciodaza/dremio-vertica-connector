@@ -16,8 +16,11 @@
 package com.dremio.exec.store.jdbc.conf;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.Properties;
 
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 
 import com.dremio.exec.catalog.conf.DisplayMetadata;
 import com.dremio.exec.catalog.conf.NotMetadataImpacting;
@@ -36,35 +39,35 @@ import io.protostuff.Tag;
 /**
  * Configuration for vertica sources.
  */
-@SourceType(value = "verticaARP", label = "vertica")
+@SourceType(value = "verticaARP", label = "vertica", uiConfig = "verticaarp-layout.json")
 public class VerticaConf extends AbstractArpConf<VerticaConf> {
   private static final String ARP_FILENAME = "arp/implementation/vertica-arp.yaml";
   private static final ArpDialect ARP_DIALECT =
       AbstractArpConf.loadArpFile(ARP_FILENAME, (ArpDialect::new));
   private static final String DRIVER = "com.vertica.jdbc.Driver";
 
-  
+
   @NotBlank
   @Tag(1)
-  @DisplayMetadata(label = "Host")
-  public String host;
-  
-    
+  @DisplayMetadata(label = "Hostname")
+  public String hostname;
+
   @NotBlank
   @Tag(2)
+  @Min(1)
+  @Max(65535)
   @DisplayMetadata(label = "Port")
-  public String port;
-  
+  public String port = "5434";
+
   @NotBlank
   @Tag(3)
-  @DisplayMetadata(label = "Database")
+  @DisplayMetadata(label = "Database (optional)")
   public String database;
-  
+
   @NotBlank
   @Tag(4)
   @DisplayMetadata(label = "Username")
-  public String user;
-
+  public String username;
 
   @NotBlank
   @Tag(5)
@@ -72,26 +75,31 @@ public class VerticaConf extends AbstractArpConf<VerticaConf> {
   @DisplayMetadata(label = "Password")
   public String password;
 
-
   @Tag(6)
+  @DisplayMetadata(label = "Encrypt connection")
+  public boolean useSsl = false;
+
+  @Tag(7)
   @DisplayMetadata(label = "Record fetch size")
   @NotMetadataImpacting
-  public int fetchSize = 200;
+  public int fetchSize = 500;
 
-
+  public VerticaConf() {
+  }
 
   @VisibleForTesting
-  public String toJdbcConnectionString() {
-    final String username = checkNotNull(this.user, "Missing username.");
+  private String toJdbcConnectionString() {
+    final String username = checkNotNull(this.username, "Missing username.");
     final String password = checkNotNull(this.password, "Missing password.");
-    
-    return String.format("jdbc:vertica://%s:%s/%s?"+"user="+ "%s"+"&password="+"%s",host, port, database, user, password);
-    //return String.format("jdbc:vertica://192.168.0.23:5433/vmart?user=dbadmin&password=password");
+    final String portAsString = checkNotNull(this.port, "missing port");
+    final int port = Integer.parseInt(portAsString);
+
+    return String.format("jdbc:vertica://%s:%s/%s", hostname, port, database);
   }
 
   @Override
   @VisibleForTesting
-  public Config toPluginConfig(SabotContext context) {
+  protected Config toPluginConfig(SabotContext context) {
     return JdbcStoragePlugin.Config.newBuilder()
         .withDialect(getDialect())
         .withFetchSize(fetchSize)
@@ -102,9 +110,20 @@ public class VerticaConf extends AbstractArpConf<VerticaConf> {
   }
 
   private CloseableDataSource newDataSource() {
-    return DataSources.newGenericConnectionPoolDataSource(DRIVER,
-      toJdbcConnectionString(), user, password, null, DataSources.CommitMode.DRIVER_SPECIFIED_COMMIT_MODE);
-  }
+    final Properties properties = new Properties();
+
+    if (useSsl) {
+      properties.setProperty("SSL", "true");
+    }
+
+  return DataSources.newGenericConnectionPoolDataSource(
+    DRIVER,
+    toJdbcConnectionString(),
+    username,
+    password,
+    properties,
+    DataSources.CommitMode.DRIVER_SPECIFIED_COMMIT_MODE);
+}
 
   @Override
   public ArpDialect getDialect() {
