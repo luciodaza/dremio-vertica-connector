@@ -61,7 +61,7 @@ public class VerticaConf extends AbstractArpConf<VerticaConf> {
 
   @NotBlank
   @Tag(3)
-  @DisplayMetadata(label = "Database (optional)")
+  @DisplayMetadata(label = "Database")
   public String database;
 
   @NotBlank
