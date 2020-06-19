@@ -57,7 +57,7 @@ public class VerticaConf extends AbstractArpConf<VerticaConf> {
   @Min(1)
   @Max(65535)
   @DisplayMetadata(label = "Port")
-  public String port = "5434";
+  public String port = "5433";
 
   @NotBlank
   @Tag(3)
