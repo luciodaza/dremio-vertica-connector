@@ -16,12 +16,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.dremio.plugin</groupId>
-  <version>11.0.0</version>
+  <version>12.0.0</version>
   <artifactId>dremio-verticaarp-plugin</artifactId>
   <name>Dremio Vertica ARP Community Connector</name>
 
   <properties>
-    <version.dremio>11.0.0-202011171636110752-16ab953d</version.dremio>
+    <version.dremio>12.0.0-202012212145230282-d8947fd3</version.dremio>
   </properties>
 
   <dependencies>
