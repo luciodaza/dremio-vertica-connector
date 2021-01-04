@@ -101,7 +101,6 @@ public class VerticaConf extends AbstractArpConf<VerticaConf> {
   @VisibleForTesting
   public JdbcPluginConfig buildPluginConfig(JdbcPluginConfig.Builder configBuilder, CredentialsService credentialsService, OptionManager optionManager) {
          return configBuilder.withDialect(getDialect())
-        .withDialect(getDialect())
         .withFetchSize(fetchSize)
         .withDatasourceFactory(this::newDataSource)
         .clearHiddenSchemas()
