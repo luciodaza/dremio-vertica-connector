@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Dremio Corporation
+ * Copyright (C) 2017-2021 Dremio Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import com.dremio.security.CredentialsService;
 import com.dremio.exec.store.jdbc.CloseableDataSource;
 import com.dremio.exec.store.jdbc.DataSources;
 import com.dremio.exec.store.jdbc.JdbcPluginConfig;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.dremio.exec.store.jdbc.dialect.arp.ArpDialect;
 import com.google.common.annotations.VisibleForTesting;
 
@@ -39,7 +40,7 @@ import io.protostuff.Tag;
 /**
  * Configuration for vertica sources.
  */
-@SourceType(value = "verticaARP", label = "vertica", uiConfig = "verticaarp-layout.json")
+@SourceType(value = "verticaARP", label = "vertica", uiConfig = "verticaarp-layout.json", externalQuerySupported = true)
 public class VerticaConf extends AbstractArpConf<VerticaConf> {
   private static final String ARP_FILENAME = "arp/implementation/vertica-arp.yaml";
   private static final ArpDialect ARP_DIALECT =
@@ -84,6 +85,22 @@ public class VerticaConf extends AbstractArpConf<VerticaConf> {
   @NotMetadataImpacting
   public int fetchSize = 500;
 
+  @Tag(8)
+  @NotMetadataImpacting
+  @JsonIgnore
+  @DisplayMetadata(label = "Grant External Query access (External Query allows creation of VDS from a Vertica query. Learn more here: https://docs.dremio.com/data-sources/external-queries.html#enabling-external-queries)")
+  public boolean enableExternalQuery = false;
+
+  @Tag(9)
+  @DisplayMetadata(label = "Maximum idle connections")
+  @NotMetadataImpacting
+  public int maxIdleConns = 8;
+
+  @Tag(10)
+  @DisplayMetadata(label = "Connection idle time (s)")
+  @NotMetadataImpacting
+  public int idleTimeSec = 60;
+
   public VerticaConf() {
   }
 
@@ -100,13 +117,13 @@ public class VerticaConf extends AbstractArpConf<VerticaConf> {
   @Override
   @VisibleForTesting
   public JdbcPluginConfig buildPluginConfig(JdbcPluginConfig.Builder configBuilder, CredentialsService credentialsService, OptionManager optionManager) {
-         return configBuilder.withDialect(getDialect())
-        .withFetchSize(fetchSize)
-        .withDatasourceFactory(this::newDataSource)
-        .clearHiddenSchemas()
-        //.addHiddenSchema("SYSTEM")
-        .build();
-  }
+       return configBuilder.withDialect(getDialect())
+      .withDatasourceFactory(this::newDataSource)
+      .withShowOnlyConnDatabase(false)
+      .withFetchSize(fetchSize)
+      .withAllowExternalQuery(enableExternalQuery)
+      .build();
+    }
 
   private CloseableDataSource newDataSource() {
     final Properties properties = new Properties();
@@ -121,7 +138,9 @@ public class VerticaConf extends AbstractArpConf<VerticaConf> {
     username,
     password,
     properties,
-    DataSources.CommitMode.DRIVER_SPECIFIED_COMMIT_MODE);
+    DataSources.CommitMode.DRIVER_SPECIFIED_COMMIT_MODE,
+    maxIdleConns,
+    idleTimeSec);
 }
 
   @Override
