@@ -16,7 +16,7 @@
 
 metadata:
   # Manually Configured Metadata Section.
-  name: VERTICAARP
+  name: verticaARP
   apiname: vertica
   spec_version: '1'
 
@@ -32,14 +32,14 @@ syntax:
 data_types:
   mappings:
   # Manually Configured Data Types Mappings Section.
- 
+
 #-------Numeric Types--------#
   - source:
       name: "BOOLEAN"
     dremio:
       name: "boolean"
     required_cast_arguments: "none"
-  
+
   - source:
       name: "INT"
     dremio:
@@ -100,7 +100,7 @@ data_types:
     dremio:
       name: "date"
     required_cast_arguments: "none"
-  
+
 #-------String Types--------#
 
   - source:
@@ -250,6 +250,160 @@ expressions:
         - "integer"
         - "varchar"
         return: "boolean"
+      - args:
+        - "varchar"
+        - "varchar"
+        return: "boolean"
+      - args:
+        - "timestamp"
+        - "timestamp"
+        return: "boolean"
+      - args:
+        - "date"
+        - "date"
+        return: "boolean"
+    - names:
+      - "="
+      signatures:
+      - args:
+        - "varchar"
+        - "date"
+        return: "boolean"
+        rewrite: "cast({0} as date) = {1}"
+      - args:
+        - "date"
+        - "varchar"
+        return: "boolean"
+        rewrite: "{0} = cast({1} as date)"
+      - args:
+        - "timestamp"
+        - "varchar"
+        return: "boolean"
+        rewrite: "cast({0} as timestamp) = {1}"
+      - args:
+        - "varchar"
+        - "timestamp"
+        return: "boolean"
+        rewrite: "{0} = cast({1} as timestamp)"
+    - names:
+      - ">"
+      signatures:
+      - args:
+        - "varchar"
+        - "date"
+        return: "boolean"
+        rewrite: "cast({0} as date) > {1}"
+      - args:
+        - "date"
+        - "varchar"
+        return: "boolean"
+        rewrite: "{0} > cast({1} as date)"
+      - args:
+        - "varchar"
+        - "timestamp"
+        return: "boolean"
+        rewrite: "cast({0} as timestamp) > {1}"
+      - args:
+        - "timestamp"
+        - "varchar"
+        return: "boolean"
+        rewrite: "{0} > cast({1} as timestamp)"
+    - names:
+      - ">="
+      signatures:
+      - args:
+        - "varchar"
+        - "date"
+        return: "boolean"
+        rewrite: "cast({0} as date) >= {1}"
+      - args:
+        - "date"
+        - "varchar"
+        return: "boolean"
+        rewrite: "{0} >= cast({1} as date)"
+      - args:
+        - "varchar"
+        - "timestamp"
+        return: "boolean"
+        rewrite: "cast({0} as timestamp) >= {1}"
+      - args:
+        - "timestamp"
+        - "varchar"
+        return: "boolean"
+        rewrite: "{0} >= cast({1} as timestamp)"
+    - names:
+      - "<"
+      signatures:
+      - args:
+        - "varchar"
+        - "date"
+        return: "boolean"
+        rewrite: "cast({0} as date) < {1}"
+      - args:
+        - "date"
+        - "varchar"
+        return: "boolean"
+        rewrite: "{0} < cast({1} as date)"
+      - args:
+        - "varchar"
+        - "timestamp"
+        return: "boolean"
+        rewrite: "cast({0} as timestamp) < {1}"
+      - args:
+        - "timestamp"
+        - "varchar"
+        return: "boolean"
+        rewrite: "{0} < cast({1} as timestamp)"
+    - names:
+      - "<="
+      signatures:
+      - args:
+        - "varchar"
+        - "date"
+        return: "boolean"
+        rewrite: "cast({0} as date) <= {1}"
+      - args:
+        - "date"
+        - "varchar"
+        return: "boolean"
+        rewrite: "{0} <= cast({1} as date)"
+      - args:
+        - "varchar"
+        - "timestamp"
+        return: "boolean"
+        rewrite: "cast({0} as timestamp) <= {1}"
+      - args:
+        - "timestamp"
+        - "varchar"
+        return: "boolean"
+        rewrite: "{0} <= cast({1} as timestamp)"
+    - names:
+      - "!="
+      - "<>"
+      signatures:
+      - args:
+        - "varchar"
+        - "date"
+        return: "boolean"
+        rewrite: "cast({0} as date) != {1}"
+      - args:
+        - "date"
+        - "varchar"
+        return: "boolean"
+        rewrite: "{0} != cast({1} as date)"
+      - args:
+        - "varchar"
+        - "timestamp"
+        return: "boolean"
+        rewrite: "cast({0} as timestamp) != {1}"
+      - args:
+        - "timestamp"
+        - "varchar"
+        return: "boolean"
+        rewrite: "{0} != cast({1} as timestamp)"
+    - names:
+      - "like"
+      signatures:
       - args:
         - "varchar"
         - "varchar"

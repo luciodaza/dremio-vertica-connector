@@ -53,13 +53,13 @@ If an operation or function is not specified in the ARP file, then Dremio will h
 
 1. In root directory with the pom.xml file run `mvn clean install`
 2. Take the resulting .jar file in the target folder and put it in the $DREMIO_HOME/jars folder in Dremio
-3. Download the [Salesforce JDBC driver from CData](https://www.cdata.com/drivers/salesforce/jdbc/) and put in in the $DREMIO_HOME/jars/3rdparty folder. Note you will need to sign up for a trial usage of the driver or pay for it if needing to use long term.
+3. Download the [Vertica JDBC driver](https://www.vertica.com/download/vertica/client-drivers/) and put in in the $DREMIO_HOME/jars/3rdparty folder.
 4. Restart Dremio
 
 
 ## Steps to create your own custom ARP connector
 
-Follow the below steps to modify this Salesforce connector to create your own custom ARP connector.
+Follow the below steps to modify this Vertica connector to create your own custom ARP connector.
 
 Note that the ARP framework requires a JDBC Driver for the source to allow Dremio to connect to it.
 
